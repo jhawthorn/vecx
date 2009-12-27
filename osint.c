@@ -1,5 +1,6 @@
 
 #include "SDL.h"
+#include "SDL_gfxPrimitives.h"
 
 #include "osint.h"
 #include "vecx.h"
@@ -11,15 +12,8 @@ static SDL_Surface *screen = NULL;
 static long screenx;
 static long screeny;
 static long scl_factor;
-
-static void updatescale(){
-	long sclx, scly;
-
-	sclx = ALG_MAX_X / screenx;
-	scly = ALG_MAX_Y / screeny;
-
-	scl_factor = sclx > scly ? sclx : scly;
-}
+static long offx;
+static long offy;
 
 void osint_render(void){
 	SDL_FillRect(screen, NULL, 0);
@@ -28,8 +22,10 @@ void osint_render(void){
 	for(v = 0; v < vector_draw_cnt; v++){
 		Uint8 c = vectors_draw[v].color * 256 / VECTREX_COLORS;
 		aalineRGBA(screen,
-				vectors_draw[v].x0 / scl_factor, vectors_draw[v].y0 / scl_factor,
-				vectors_draw[v].x1 / scl_factor, vectors_draw[v].y1 / scl_factor,
+				offx + vectors_draw[v].x0 / scl_factor,
+        offy + vectors_draw[v].y0 / scl_factor,
+				offx + vectors_draw[v].x1 / scl_factor,
+        offy + vectors_draw[v].y1 / scl_factor,
 				c, c, c, 0xff);
 	}
 	SDL_Flip(screen);
@@ -62,6 +58,22 @@ static void init(){
 	}
 }
 
+void resize(int width, int height){
+	long sclx, scly;
+
+	screenx = width;
+	screeny = height;
+	screen = SDL_SetVideoMode(screenx, screeny, 0, SDL_SWSURFACE | SDL_RESIZABLE);
+
+	sclx = ALG_MAX_X / screen->w;
+	scly = ALG_MAX_Y / screen->h;
+
+	scl_factor = sclx > scly ? sclx : scly;
+
+  offx = (screenx - ALG_MAX_X / scl_factor) / 2;
+  offy = (screeny - ALG_MAX_Y / scl_factor) / 2;
+}
+
 static void readevents(){
 	SDL_Event e;
 	while(SDL_PollEvent(&e)){
@@ -69,6 +81,9 @@ static void readevents(){
 			case SDL_QUIT:
 				exit(0);
 				break;
+      case SDL_VIDEORESIZE:
+        resize(e.resize.w, e.resize.h);
+        break;
 			case SDL_KEYDOWN:
 				switch(e.key.keysym.sym){
 					case SDLK_ESCAPE:
@@ -97,6 +112,8 @@ static void readevents(){
 					case SDLK_DOWN:
 						alg_jch1 = 0x00;
 						break;
+          default:
+            break;
 				}
 				break;
 			case SDL_KEYUP:
@@ -125,8 +142,12 @@ static void readevents(){
 					case SDLK_DOWN:
 						alg_jch1 = 0x80;
 						break;
+          default:
+            break;
 				}
 				break;
+      default:
+        break;
 		}
 	}
 }
@@ -152,10 +173,7 @@ void osint_emuloop(){
 int main(int argc, char *argv[]){
 	SDL_Init(SDL_INIT_VIDEO);
 
-	screenx = 330*3/2;
-	screeny = 410*3/2;
-	screen = SDL_SetVideoMode(screenx, screeny, 0, SDL_SWSURFACE);
-	updatescale();
+  resize(330*3/2, 410*3/2);
 
 	if(argc > 1)
 		cartfilename = argv[1];
