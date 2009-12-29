@@ -23,9 +23,9 @@ void osint_render(void){
 		Uint8 c = vectors_draw[v].color * 256 / VECTREX_COLORS;
 		aalineRGBA(screen,
 				offx + vectors_draw[v].x0 / scl_factor,
-        offy + vectors_draw[v].y0 / scl_factor,
+				offy + vectors_draw[v].y0 / scl_factor,
 				offx + vectors_draw[v].x1 / scl_factor,
-        offy + vectors_draw[v].y1 / scl_factor,
+				offy + vectors_draw[v].y1 / scl_factor,
 				c, c, c, 0xff);
 	}
 	SDL_Flip(screen);
@@ -70,8 +70,8 @@ void resize(int width, int height){
 
 	scl_factor = sclx > scly ? sclx : scly;
 
-  offx = (screenx - ALG_MAX_X / scl_factor) / 2;
-  offy = (screeny - ALG_MAX_Y / scl_factor) / 2;
+	offx = (screenx - ALG_MAX_X / scl_factor) / 2;
+	offy = (screeny - ALG_MAX_Y / scl_factor) / 2;
 }
 
 static void readevents(){
@@ -81,9 +81,9 @@ static void readevents(){
 			case SDL_QUIT:
 				exit(0);
 				break;
-      case SDL_VIDEORESIZE:
-        resize(e.resize.w, e.resize.h);
-        break;
+			case SDL_VIDEORESIZE:
+				resize(e.resize.w, e.resize.h);
+				break;
 			case SDL_KEYDOWN:
 				switch(e.key.keysym.sym){
 					case SDLK_ESCAPE:
@@ -112,8 +112,8 @@ static void readevents(){
 					case SDLK_DOWN:
 						alg_jch1 = 0x00;
 						break;
-          default:
-            break;
+					default:
+						break;
 				}
 				break;
 			case SDL_KEYUP:
@@ -142,12 +142,12 @@ static void readevents(){
 					case SDLK_DOWN:
 						alg_jch1 = 0x80;
 						break;
-          default:
-            break;
+					default:
+						break;
 				}
 				break;
-      default:
-        break;
+			default:
+				break;
 		}
 	}
 }
@@ -173,7 +173,7 @@ void osint_emuloop(){
 int main(int argc, char *argv[]){
 	SDL_Init(SDL_INIT_VIDEO);
 
-  resize(330*3/2, 410*3/2);
+	resize(330*3/2, 410*3/2);
 
 	if(argc > 1)
 		cartfilename = argv[1];
