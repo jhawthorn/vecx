@@ -6,7 +6,7 @@ TARGET := vecx
 CLEANFILES := $(TARGET) $(OBJECTS)
 
 $(TARGET): $(OBJECTS)
-	gcc $(CFLAGS) -o $@ $^ $(LIBS)
+	$(CC) $(CFLAGS) -o $@ $^ $(LIBS)
 
 clean:
 	$(RM) $(CLEANFILES)
