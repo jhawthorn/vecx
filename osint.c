@@ -5,7 +5,7 @@
 #include "osint.h"
 #include "vecx.h"
 
-#define EMU_TIMER 30 /* the emulators heart beats at 20 milliseconds */
+#define EMU_TIMER 20 /* the emulators heart beats at 20 milliseconds */
 
 static SDL_Surface *screen = NULL;
 
