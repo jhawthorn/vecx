@@ -3,6 +3,7 @@
 #include "SDL_gfxPrimitives.h"
 
 #include "osint.h"
+#include "e8910.h"
 #include "vecx.h"
 
 #define EMU_TIMER 20 /* the emulators heart beats at 20 milliseconds */
@@ -171,7 +172,10 @@ void osint_emuloop(){
 }
 
 int main(int argc, char *argv[]){
-	SDL_Init(SDL_INIT_VIDEO);
+	if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0){
+		fprintf(stderr, "Failed to initialize SDL: %s\n", SDL_GetError());
+		exit(-1);
+	}
 
 	resize(330*3/2, 410*3/2);
 
@@ -180,7 +184,10 @@ int main(int argc, char *argv[]){
 
 	init();
 
+	e8910_init_sound();
 	osint_emuloop();
+	e8910_done_sound();
+	SDL_Quit();
 
 	return 0;
 }

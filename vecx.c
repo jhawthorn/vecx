@@ -2,6 +2,7 @@
 #include "e6809.h"
 #include "vecx.h"
 #include "osint.h"
+#include "e8910.h"
 
 #define einline __inline
 
@@ -113,6 +114,7 @@ static einline void snd_update (void)
 
 		if (snd_select != 14) {
 			snd_regs[snd_select] = via_ora;
+			e8910_write(snd_select, via_ora);
 		}
 
 		break;
@@ -531,11 +533,13 @@ void vecx_reset (void)
 
 	for (r = 0; r < 16; r++) {
 		snd_regs[r] = 0;
+		e8910_write(r, 0);
 	}
 
 	/* input buttons */
 
 	snd_regs[14] = 0xff;
+	e8910_write(14, 0xff);
 
 	snd_select = 0;
 
