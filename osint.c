@@ -1,6 +1,8 @@
 
 #include "SDL.h"
+#include "SDL_image.h"
 #include "SDL_gfxPrimitives.h"
+#include "SDL_rotozoom.h"
 
 #include "osint.h"
 #include "e8910.h"
@@ -9,9 +11,9 @@
 #define EMU_TIMER 20 /* the emulators heart beats at 20 milliseconds */
 
 static SDL_Surface *screen = NULL;
+static SDL_Surface *overlay_original = NULL;
+static SDL_Surface *overlay = NULL;
 
-static long screenx;
-static long screeny;
 static long scl_factor;
 static long offx;
 static long offy;
@@ -28,6 +30,10 @@ void osint_render(void){
 				offx + vectors_draw[v].x1 / scl_factor,
 				offy + vectors_draw[v].y1 / scl_factor,
 				c, c, c, 0xff);
+	}
+	if(overlay){
+		SDL_Rect dest_rect = {offx, offy, 0, 0};
+		SDL_BlitSurface(overlay, NULL, screen, &dest_rect);
 	}
 	SDL_Flip(screen);
 }
@@ -62,8 +68,8 @@ static void init(){
 void resize(int width, int height){
 	long sclx, scly;
 
-	screenx = width;
-	screeny = height;
+	long screenx = width;
+	long screeny = height;
 	screen = SDL_SetVideoMode(screenx, screeny, 0, SDL_SWSURFACE | SDL_RESIZABLE);
 
 	sclx = ALG_MAX_X / screen->w;
@@ -73,6 +79,13 @@ void resize(int width, int height){
 
 	offx = (screenx - ALG_MAX_X / scl_factor) / 2;
 	offy = (screeny - ALG_MAX_Y / scl_factor) / 2;
+
+	if(overlay_original){
+		if(overlay)
+			SDL_FreeSurface(overlay);
+		double overlay_scale = ((double)ALG_MAX_X / (double)scl_factor) / (double)overlay_original->w;
+		overlay = zoomSurface(overlay_original, overlay_scale, overlay_scale, 0);
+	}
 }
 
 static void readevents(){
@@ -80,7 +93,7 @@ static void readevents(){
 	while(SDL_PollEvent(&e)){
 		switch(e.type){
 			case SDL_QUIT:
-				exit(0);
+				exit(EXIT_SUCCESS);
 				break;
 			case SDL_VIDEORESIZE:
 				resize(e.resize.w, e.resize.h);
@@ -88,7 +101,7 @@ static void readevents(){
 			case SDL_KEYDOWN:
 				switch(e.key.keysym.sym){
 					case SDLK_ESCAPE:
-						exit(0);
+						exit(EXIT_SUCCESS);
 					case SDLK_a:
 						snd_regs[14] &= ~0x01;
 						break;
@@ -171,6 +184,16 @@ void osint_emuloop(){
 	}
 }
 
+void load_overlay(const char *filename){
+	SDL_Surface *image;
+	image = IMG_Load(filename);
+	if(image){
+		overlay_original = image;
+	}else{
+		fprintf(stderr, "IMG_Load: %s\n", IMG_GetError());
+	}
+}
+
 int main(int argc, char *argv[]){
 	if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0){
 		fprintf(stderr, "Failed to initialize SDL: %s\n", SDL_GetError());
@@ -181,6 +204,8 @@ int main(int argc, char *argv[]){
 
 	if(argc > 1)
 		cartfilename = argv[1];
+	if(argc > 2)
+		load_overlay(argv[2]);
 
 	init();
 
