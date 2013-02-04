@@ -1976,7 +1976,7 @@ unsigned e6809_sstep (unsigned irq_i, unsigned irq_f)
 		inst_tst16 (reg_x);
 		cycles += 3;
 		break;
-	case 0x9e: 
+	case 0x9e:
 		ea = ea_direct ();
 		reg_x = read16 (ea);
 		inst_tst16 (reg_x);
@@ -2000,7 +2000,7 @@ unsigned e6809_sstep (unsigned irq_i, unsigned irq_f)
 		inst_tst16 (reg_u);
 		cycles += 3;
 		break;
-	case 0xde: 
+	case 0xde:
 		ea = ea_direct ();
 		reg_u = read16 (ea);
 		inst_tst16 (reg_u);
@@ -2082,7 +2082,7 @@ unsigned e6809_sstep (unsigned irq_i, unsigned irq_f)
 		inst_tst16 (get_reg_d ());
 		cycles += 3;
 		break;
-	case 0xdc: 
+	case 0xdc:
 		ea = ea_direct ();
 		set_reg_d (read16 (ea));
 		inst_tst16 (get_reg_d ());
@@ -2459,7 +2459,7 @@ unsigned e6809_sstep (unsigned irq_i, unsigned irq_f)
 			inst_tst16 (reg_y);
 			cycles += 4;
 			break;
-		case 0x9e: 
+		case 0x9e:
 			ea = ea_direct ();
 			reg_y = read16 (ea);
 			inst_tst16 (reg_y);
@@ -2502,7 +2502,7 @@ unsigned e6809_sstep (unsigned irq_i, unsigned irq_f)
 			inst_tst16 (reg_s);
 			cycles += 4;
 			break;
-		case 0xde: 
+		case 0xde:
 			ea = ea_direct ();
 			reg_s = read16 (ea);
 			inst_tst16 (reg_s);

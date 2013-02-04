@@ -550,7 +550,7 @@ void vecx_reset (void)
 	via_t1lh = 0;
 	via_t1pb7 = 0x80;
 	via_t2on = 0;
-	via_t2int = 0; 
+	via_t2int = 0;
 	via_t2c = 0;
 	via_t2ll = 0;
 	via_sr = 0;
