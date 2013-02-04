@@ -63,7 +63,7 @@ static long alg_curr_y; /* current y position */
 
 enum {
 	VECTREX_PDECAY	= 30,      /* phosphor decay rate */
-	
+
 	/* number of 6809 cycles before a frame redraw */
 
 	FCYCLES_INIT    = VECTREX_MHZ / VECTREX_PDECAY,
@@ -72,7 +72,7 @@ enum {
 	 * one only needs VECTREX_MHZ / VECTREX_PDECAY but we need to also store
 	 * deleted vectors in a single table
 	 */
-	
+
 	VECTOR_CNT		= VECTREX_MHZ / VECTREX_PDECAY,
 
 	VECTOR_HASH     = 65521
@@ -118,7 +118,7 @@ static einline void snd_update (void)
 		break;
 	case 0x18:
 		/* the sound chip is latching an address */
-		
+
 		if ((via_ora & 0xf0) == 0x00) {
 			snd_select = via_ora & 0x0f;
 		}
@@ -261,7 +261,7 @@ unsigned char read8 (unsigned address)
 				break;
 			case 0x4:
 				/* T1 low order counter */
-				
+
 				data = (unsigned char) via_t1c;
 				via_ifr &= 0xbf; /* remove timer 1 interrupt flag */
 
@@ -407,7 +407,7 @@ void write8 (unsigned address, unsigned char data)
 				break;
 			case 0x4:
 				/* T1 low order counter */
-				
+
 				via_t1ll = data;
 
 				break;
@@ -588,7 +588,7 @@ void vecx_reset (void)
 	vector_erse_cnt = 0;
 	vectors_draw = vectors_set;
 	vectors_erse = vectors_set + VECTOR_CNT;
-	
+
 	fcycles = FCYCLES_INIT;
 
 	e6809_read8 = read8;

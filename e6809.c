@@ -536,7 +536,7 @@ einline unsigned inst_com (unsigned data)
 	unsigned r;
 
 	r = ~data;
-	
+
 	set_cc (FLAG_N, test_n (r));
 	set_cc (FLAG_Z, test_z8 (r));
 	set_cc (FLAG_V, 0);
@@ -554,7 +554,7 @@ einline unsigned inst_lsr (unsigned data)
 	unsigned r;
 
 	r = (data >> 1) & 0x7f;
-	
+
 	set_cc (FLAG_N, 0);
 	set_cc (FLAG_Z, test_z8 (r));
 	set_cc (FLAG_C, data & 1);
@@ -572,7 +572,7 @@ einline unsigned inst_ror (unsigned data)
 
 	c = get_cc (FLAG_C);
 	r = ((data >> 1) & 0x7f) | (c << 7);
-	
+
 	set_cc (FLAG_N, test_n (r));
 	set_cc (FLAG_Z, test_z8 (r));
 	set_cc (FLAG_C, data & 1);
@@ -589,7 +589,7 @@ einline unsigned inst_asr (unsigned data)
 	unsigned r;
 
 	r = ((data >> 1) & 0x7f) | (data & 0x80);
-	
+
 	set_cc (FLAG_N, test_n (r));
 	set_cc (FLAG_Z, test_z8 (r));
 	set_cc (FLAG_C, data & 1);
@@ -608,7 +608,7 @@ einline unsigned inst_asl (unsigned data)
 	i0 = data;
 	i1 = data;
 	r = i0 + i1;
-	
+
 	set_cc (FLAG_H, test_c (i0 << 4, i1 << 4, r << 4, 0));
 	set_cc (FLAG_N, test_n (r));
 	set_cc (FLAG_Z, test_z8 (r));
@@ -630,7 +630,7 @@ einline unsigned inst_rol (unsigned data)
 	i1 = data;
 	c = get_cc (FLAG_C);
 	r = i0 + i1 + c;
-	
+
 	set_cc (FLAG_N, test_n (r));
 	set_cc (FLAG_Z, test_z8 (r));
 	set_cc (FLAG_V, test_v (i0, i1, r));
@@ -650,7 +650,7 @@ einline unsigned inst_dec (unsigned data)
 	i0 = data;
 	i1 = 0xff;
 	r = i0 + i1;
-	
+
 	set_cc (FLAG_N, test_n (r));
 	set_cc (FLAG_Z, test_z8 (r));
 	set_cc (FLAG_V, test_v (i0, i1, r));
@@ -669,7 +669,7 @@ einline unsigned inst_inc (unsigned data)
 	i0 = data;
 	i1 = 1;
 	r = i0 + i1;
-	
+
 	set_cc (FLAG_N, test_n (r));
 	set_cc (FLAG_Z, test_z8 (r));
 	set_cc (FLAG_V, test_v (i0, i1, r));
@@ -712,7 +712,7 @@ einline unsigned inst_sub8 (unsigned data0, unsigned data1)
 	i0 = data0;
 	i1 = ~data1;
 	r = i0 + i1 + 1;
-	
+
 	set_cc (FLAG_H, test_c (i0 << 4, i1 << 4, r << 4, 0));
 	set_cc (FLAG_N, test_n (r));
 	set_cc (FLAG_Z, test_z8 (r));
@@ -1146,7 +1146,7 @@ unsigned e6809_sstep (unsigned irq_i, unsigned irq_f)
 			}
 		}
 	}
-	
+
 	if (irq_i) {
 		if (get_cc (FLAG_I) == 0) {
 			if (irq_status != IRQ_CWAI) {
@@ -2130,7 +2130,7 @@ unsigned e6809_sstep (unsigned irq_i, unsigned irq_f)
 
 		set_cc (FLAG_Z, test_z16 (r));
 		set_cc (FLAG_C, (r >> 7) & 1);
-		
+
 		cycles += 11;
 		break;
 	/* bra */
