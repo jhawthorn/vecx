@@ -157,7 +157,7 @@ void osint_emuloop(){
 	Uint32 next_time = SDL_GetTicks() + EMU_TIMER;
 	vecx_reset();
 	for(;;){
-		vecx_emu((VECTREX_MHZ / 1000) * EMU_TIMER, 0);
+		vecx_emu((VECTREX_MHZ / 1000) * EMU_TIMER);
 		readevents();
 
 		{

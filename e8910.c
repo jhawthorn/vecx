@@ -206,6 +206,8 @@ void e8910_write(int r, int v)
 static void
 e8910_callback(void *userdata, Uint8 *stream, int length)
 {
+	(void) userdata;
+
 	int outn;
 	Uint8* buf1 = stream;
 

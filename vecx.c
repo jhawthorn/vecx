@@ -921,7 +921,7 @@ static einline void alg_sstep (void)
 	}
 }
 
-void vecx_emu (long cycles, int ahead)
+void vecx_emu (long cycles)
 {
 	unsigned c, icycles;
 

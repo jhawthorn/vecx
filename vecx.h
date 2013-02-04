@@ -34,6 +34,6 @@ extern vector_t *vectors_draw;
 extern vector_t *vectors_erse;
 
 void vecx_reset (void);
-void vecx_emu (long cycles, int ahead);
+void vecx_emu (long cycles);
 
 #endif
