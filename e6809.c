@@ -10,7 +10,7 @@
  *    the lower bits with the unused upper bits all set to zero.
  */
 
-#define einline __inline
+#define einline static __inline
 
 enum {
 	FLAG_E		= 0x80,
