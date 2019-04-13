@@ -2,7 +2,6 @@
 #include "SDL.h"
 #include "SDL_image.h"
 #include "SDL2_gfxPrimitives.h"
-#include "SDL2_rotozoom.h"
 
 #include "osint.h"
 #include "e8910.h"
