@@ -1,8 +1,8 @@
 
 #include "SDL.h"
 #include "SDL_image.h"
-#include "SDL_gfxPrimitives.h"
-#include "SDL_rotozoom.h"
+#include "SDL2_gfxPrimitives.h"
+#include "SDL2_rotozoom.h"
 
 #include "osint.h"
 #include "e8910.h"
@@ -10,21 +10,22 @@
 
 #define EMU_TIMER 20 /* the emulators heart beats at 20 milliseconds */
 
-static SDL_Surface *screen = NULL;
-static SDL_Surface *overlay_original = NULL;
-static SDL_Surface *overlay = NULL;
+static SDL_Window *screen = NULL;
+static SDL_Renderer *renderer= NULL;
+static SDL_Texture *overlay = NULL;
 
 static long scl_factor;
 static long offx;
 static long offy;
 
 void osint_render(void){
-	SDL_FillRect(screen, NULL, 0);
+	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+	SDL_RenderClear(renderer);
 
 	int v;
 	for(v = 0; v < vector_draw_cnt; v++){
 		Uint8 c = vectors_draw[v].color * 256 / VECTREX_COLORS;
-		aalineRGBA(screen,
+		aalineRGBA(renderer,
 				offx + vectors_draw[v].x0 / scl_factor,
 				offy + vectors_draw[v].y0 / scl_factor,
 				offx + vectors_draw[v].x1 / scl_factor,
@@ -32,10 +33,10 @@ void osint_render(void){
 				c, c, c, 0xff);
 	}
 	if(overlay){
-		SDL_Rect dest_rect = {offx, offy, 0, 0};
-		SDL_BlitSurface(overlay, NULL, screen, &dest_rect);
+		SDL_Rect dest_rect = {offx, offy, ((double)ALG_MAX_X / (double)scl_factor), ((double)ALG_MAX_Y / (double)scl_factor)};
+		SDL_RenderCopy(renderer, overlay, NULL, &dest_rect);
 	}
-	SDL_Flip(screen);
+	SDL_RenderPresent(renderer);
 }
 
 static char *romfilename = "rom.dat";
@@ -70,22 +71,14 @@ void resize(int width, int height){
 
 	long screenx = width;
 	long screeny = height;
-	screen = SDL_SetVideoMode(screenx, screeny, 0, SDL_SWSURFACE | SDL_RESIZABLE);
 
-	sclx = ALG_MAX_X / screen->w;
-	scly = ALG_MAX_Y / screen->h;
+	sclx = ALG_MAX_X / width;
+	scly = ALG_MAX_Y / height;
 
 	scl_factor = sclx > scly ? sclx : scly;
 
 	offx = (screenx - ALG_MAX_X / scl_factor) / 2;
 	offy = (screeny - ALG_MAX_Y / scl_factor) / 2;
-
-	if(overlay_original){
-		if(overlay)
-			SDL_FreeSurface(overlay);
-		double overlay_scale = ((double)ALG_MAX_X / (double)scl_factor) / (double)overlay_original->w;
-		overlay = zoomSurface(overlay_original, overlay_scale, overlay_scale, 0);
-	}
 }
 
 static void readevents(){
@@ -95,8 +88,15 @@ static void readevents(){
 			case SDL_QUIT:
 				exit(EXIT_SUCCESS);
 				break;
-			case SDL_VIDEORESIZE:
-				resize(e.resize.w, e.resize.h);
+			case SDL_WINDOWEVENT:
+				switch (e.window.event) {
+					case SDL_WINDOWEVENT_RESIZED:
+						resize(e.window.data1, e.window.data2);
+						break;
+					case SDL_WINDOWEVENT_SIZE_CHANGED:
+						resize(e.window.data1, e.window.data2);
+						break;
+				}
 				break;
 			case SDL_KEYDOWN:
 				switch(e.key.keysym.sym){
@@ -186,9 +186,10 @@ void osint_emuloop(){
 
 void load_overlay(const char *filename){
 	SDL_Surface *image;
-	image = IMG_Load(filename);
+	image = SDL_LoadBMP(filename);
 	if(image){
-		overlay_original = image;
+		overlay = SDL_CreateTextureFromSurface(renderer, image);
+		SDL_FreeSurface(image);
 	}else{
 		fprintf(stderr, "IMG_Load: %s\n", IMG_GetError());
 	}
@@ -198,6 +199,11 @@ int main(int argc, char *argv[]){
 	if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0){
 		fprintf(stderr, "Failed to initialize SDL: %s\n", SDL_GetError());
 		exit(-1);
+	}
+	SDL_CreateWindowAndRenderer(330*3/2, 410*3/2, SDL_WINDOW_RESIZABLE, &screen, &renderer);
+	if(screen == NULL || renderer == NULL){
+		fprintf(stderr, "Failed to initialize SDL window/renderer: %s\n", SDL_GetError());
+		exit(-2);
 	}
 
 	resize(330*3/2, 410*3/2);
