@@ -4,7 +4,7 @@
 #include "osint.h"
 #include "e8910.h"
 
-#define einline __inline
+#define einline static __inline
 
 unsigned char rom[8192];
 unsigned char cart[32768];
